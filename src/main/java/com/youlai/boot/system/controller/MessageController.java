@@ -27,10 +27,6 @@ public class MessageController {
     private final MessageChannelService messageService;
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate = new RestTemplate();
-    String corpId = "ww1b363bc3d08980ca";
-    String agentSecret = "D2_01oTAMwCkcctG__IjRhJK0L99Zz8n29afC6HGuLI";
-    String toUser = "@all";
-    Integer agentId = 1000002;
     @Operation(summary = "获取对应的消息通道")
     @GetMapping("/{key}/getChannelInfo")
     public Result<?> getChannelInfo(@PathVariable String key){
@@ -52,46 +48,5 @@ public class MessageController {
         messageService.saveChannelInfo(key, channelInfo);
         return Result.success();
     }
-    @Operation(summary = "企业微信通知")
-    @PostMapping("/wechat/send")
-    @Log(value = "企业微信通知", module = LogModuleEnum.SETTING)
-    public Result<?> sendWechatMessage(@RequestBody Map<String, String> params){
-        String content = params.get("content");
-        String token = getToken();
-        if (token == null)
-            return Result.failed();
 
-        String url = "http://47.108.227.234:8088/cgi-bin/message/send?access_token=" + token;
-        String json = String.format(
-                "{\"touser\":\"%s\",\"agentid\":%d,\"msgtype\":\"text\",\"text\":{\"content\":\"%s\"}}",
-                toUser, agentId, content.replace("\"", "\\\"")
-        );
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<>(json, headers);
-
-        try {
-            String result = restTemplate.postForObject(url, entity, String.class);
-            Result.failed("\"errcode\":0");
-        } catch (Exception e) {
-            System.err.println("发送失败：" + e.getMessage());
-            Result.failed("发送失败：" + e.getMessage());
-        }
-        return Result.success();
-    }
-    private String getToken() {
-
-
-        String url = "http://47.108.227.234:8088/cgi-bin/gettoken?corpid=" + corpId + "&corpsecret=" + agentSecret;
-        try {
-            String result = restTemplate.getForObject(url, String.class);
-            return result.contains("\"access_token\"")
-                    ? result.split("\"access_token\":\"")[1].split("\",\"")[0]
-                    : null;
-        } catch (Exception e) {
-            System.err.println("获取Token失败：" + e.getMessage());
-            return null;
-        }
-    }
 }
