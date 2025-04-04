@@ -26,7 +26,6 @@ import java.util.Map;
 public class MessageController {
     private final MessageChannelService messageService;
     private final ObjectMapper objectMapper;
-    private final RestTemplate restTemplate = new RestTemplate();
     @Operation(summary = "获取对应的消息通道")
     @GetMapping("/{key}/getChannelInfo")
     public Result<?> getChannelInfo(@PathVariable String key){
@@ -48,5 +47,18 @@ public class MessageController {
         messageService.saveChannelInfo(key, channelInfo);
         return Result.success();
     }
-
+    @Operation(summary = "企业微信通知(POST)")
+    @PostMapping("/wechat/send")
+    @Log(value = "企业微信通知", module = LogModuleEnum.SETTING)
+    public Result<?> sendWechatMessage(@RequestBody Map<String, String> params){
+            messageService.sendWeComMessage(params.get("toUser"), params.get("content"));
+        return Result.success();
+    }
+    @Operation(summary = "企业微信通知 (GET)")
+    @GetMapping("/wechat/send")
+    @Log(value = "企业微信通知", module = LogModuleEnum.SETTING)
+    public Result<?> sendWechatMessageGet(@RequestParam String toUser, @RequestParam String msg) {
+        messageService.sendWeComMessage(toUser, msg);
+        return Result.success();
+    }
 }

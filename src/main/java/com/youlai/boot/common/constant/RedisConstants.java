@@ -57,4 +57,11 @@ public interface RedisConstants {
         String ROLE_PERMS = "system:role:perms"; // 系统角色和权限映射
     }
 
+    /**
+     * 微信模块
+     */
+    interface WeCom {
+        String CONFIG_INFO = "wecom:config:{}"; // 微信用户信息
+        String TOKEN_KEY = "wecom:token:{}";
+    }
 }

@@ -2,7 +2,7 @@ spring:
   application:
     name: youlai-boot
   profiles:
-    active: dev
+    active: remote
   config:
     import: classpath:codegen.yml
 
